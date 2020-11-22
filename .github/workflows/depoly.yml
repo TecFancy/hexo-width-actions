@@ -39,7 +39,7 @@ jobs:
         
     - name: Setup Git Infomation
       run: | 
-        git config --global user.name "ruofei"
+        git config --global user.name "smpower"
         git config --global user.email "contact@mail.ruofei.site"
         git config --global core.quotepath false
     - name: Deploy Hexo 
