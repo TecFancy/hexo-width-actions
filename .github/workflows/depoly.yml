@@ -1,34 +1,40 @@
-name: GitHub Actions Build and Deploy Demo
+name: Hexo Deploy
+
 on:
   push:
     branches:
-      - hexo
+      - master
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2.3.1  
-      with:
-        persist-credentials: false
-    
-    - name: Install and Build # 下载依赖 打包项目
-      run: |
-        yarn
-        yarn build
-    
-    # - name: Install dependencies
-    #   run: yarn
-    
-    # - name: Generate public files
-    #   run: yarn build
+  build:
+    runs-on: ubuntu-18.04
+    if: github.event.repository.owner.id == github.event.sender.id
 
-    - name: Deploy # 将打包内容发布到 github page
-        uses: JamesIves/github-pages-deploy-action@3.5.9 # 使用别人写好的 actions
-        with:  # 自定义环境变量
-          ACCESS_TOKEN: ${{ secrets.DEPLOY_KEY }} # VUE_ADMIN_TEMPLATE 是我的 secret 名称，需要替换成你的
-          BRANCH: master
-          FOLDER: public
-          REPOSITORY_NAME: smpower/smpower.github.io # 这是我的 github page 仓库
-          TARGET_FOLDER: / # 打包的文件将放到静态服务器 github-actions-demo 目录下
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+
+      - name: Setup Hexo
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.email "john@doe.com"
+          git config --global user.name "John Doe"
+          yarn
+
+      - name: Deploy
+        run: |
+          yarn clean
+          yarn deploy
