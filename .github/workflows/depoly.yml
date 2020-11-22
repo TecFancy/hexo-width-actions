@@ -10,6 +10,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
+    
+    # - name: Install dependencies
+    #   run: yarn
+    
+    # - name: Generate public files
+    #   run: yarn build
 
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@master
@@ -17,4 +23,4 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
         FOLDER: public
-        BUILD_SCRIPT: yarn && yarn generate
+        BUILD_SCRIPT: yarn && yarn build
