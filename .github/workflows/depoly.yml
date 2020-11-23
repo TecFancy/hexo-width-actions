@@ -19,11 +19,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '14.x'
 
       - name: Setup Hexo
         env:
-          ACTION_DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          ACTION_DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_KEY }}
         run: |
           mkdir -p ~/.ssh/
           echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
@@ -37,5 +37,5 @@ jobs:
 
       - name: Deploy
         run: |
-          yarn clean
-          yarn deploy
+          hexo clean
+          hexo deploy
